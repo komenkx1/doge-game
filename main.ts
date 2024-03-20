@@ -1,0 +1,79 @@
+let projectile: Sprite = null
+tiles.setCurrentTilemap(tilemap`level2`)
+let mySprite = sprites.create(img`
+    ........................
+    ....ffffff..............
+    ..ffeeeef2f.............
+    .ffeeeef222f............
+    .feeeffeeeef...cc.......
+    .ffffee2222ef.cdc.......
+    .fe222ffffe2fcddc.......
+    fffffffeeeffcddc........
+    ffe44ebf44ecddc.........
+    fee4d41fddecdc..........
+    .feee4dddedccc..........
+    ..ffee44e4dde...........
+    ...f222244ee............
+    ...f2222e2f.............
+    ...f444455f.............
+    ....ffffff..............
+    .....fff................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    ........................
+    `, SpriteKind.Player)
+tiles.placeOnTile(mySprite, tiles.getTileLocation(1, 5))
+mySprite.ay = 500
+info.setLife(3)
+game.onUpdateInterval(2000, function () {
+    projectile = sprites.createProjectileFromSide(img`
+        . . . . . . . e e e e e . . . . 
+        . . . . . e e 2 2 2 2 2 e . . . 
+        . . . . e e 2 2 2 2 2 2 2 e . . 
+        . . . . e 9 4 2 2 2 2 2 4 b e . 
+        . . e e 9 9 4 4 2 2 2 2 4 9 b e 
+        . e 2 2 9 9 4 4 4 2 2 2 4 9 9 e 
+        e 2 2 2 9 9 2 4 4 4 4 4 2 9 9 e 
+        e 2 2 2 9 9 e e e e e e e 9 9 e 
+        e 2 2 2 9 b e b b b e b e b 9 e 
+        e 2 e e e e b b b b e b b e b e 
+        e e 3 3 e e 2 2 2 2 e 2 2 e e e 
+        e 3 3 e e e e e e e e e e e e e 
+        e e e e e e e e e e e e e e e e 
+        e e e e f f f e e e e f f f e e 
+        . e e f b c c f e e f b c c f . 
+        . . . . b b f . . . . b b f . . 
+        `, randint(-100, -80), 0)
+    tiles.placeOnTile(projectile, tiles.getTileLocation(9, 5))
+    info.changeScoreBy(1)
+})
+forever(function () {
+    if (controller.A.isPressed()) {
+        mySprite.vy = -200
+    }
+    if (mySprite.overlapsWith(projectile)) {
+        info.changeLifeBy(-1)
+        pause(1000)
+    }
+    if (info.score() == 20) {
+        if (info.life() == 3) {
+            game.gameOver(true)
+        }
+        mySprite.sayText("Try Again", 2000, false)
+        pause(1000)
+        game.reset()
+    } else if (info.score() == 5) {
+        scene.setBackgroundColor(2)
+        music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.UntilDone)
+    } else if (info.score() == 10) {
+        scene.setBackgroundColor(5)
+        music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.UntilDone)
+    } else if (info.score() == 15) {
+        scene.setBackgroundColor(7)
+        music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.UntilDone)
+    }
+})
